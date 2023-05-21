@@ -4,6 +4,10 @@ import jwt from 'jsonwebtoken';
 
 export const createUser = async (req: Request, res: Response) => {
   try {
+    if (!req.body.email || !req.body.password || !req.body.name) {
+      return res.status(400).send();
+    }
+
     const user = new User(req.body);
     await user.save();
     res.status(201).send(user);
@@ -46,8 +50,11 @@ export const getUserToken = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
-  const updates = Object.keys(req.body);
+export const updateUser = async (
+  req: Request<{ id: string }>,
+  res: Response,
+) => {
+  const updates = Object.keys(req.body) as string[];
   const allowedUpdates = ['email', 'password', 'name'];
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update),
@@ -58,29 +65,44 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const userId = req.params.id;
+    const userTokenId = req.userId!;
+    if (userId !== userTokenId) {
+      return res.status(401).send();
+    }
+
+    const user = User.findByIdAndUpdate(userId, req.body, {
       new: true,
       runValidators: true,
     });
+
     if (!user) {
       return res.status(404).send();
     }
+
     res.send(user);
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (
+  req: Request<{ id: string }>,
+  res: Response,
+) => {
   try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true },
-    );
+    const userId = req.params.id;
+    const userTokenId = req.userId!;
+    if (userId !== userTokenId) {
+      return res.status(401).send();
+    }
+
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).send();
     }
+
+    await user.delete();
     res.send(user);
   } catch (error) {
     res.status(500).send(error);

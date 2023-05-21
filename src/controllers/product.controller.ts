@@ -1,8 +1,16 @@
 import { Product } from '@models';
+import { getProductCategoriesParams } from '@shared/types/params/productParams';
+import { GetProductsQueryParams } from '@shared/types/queries/productQueries';
 import { Request, Response } from 'express';
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
+    if (req.body.user !== req.userId) {
+      return res.status(403).send({
+        message: 'User ID in token does not match user ID in request body.',
+      });
+    }
+
     const product = new Product(req.body);
     await product.save();
     res.status(201).send(product);
@@ -23,21 +31,55 @@ export const getProduct = async (req: Request, res: Response) => {
   }
 };
 
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (
+  req: Request<any, any, any, GetProductsQueryParams>,
+  res: Response,
+) => {
+  // - ussing aggregate to get the products
+  // - the products also must be ordered by rating
+
   try {
-    const products = await Product.find({
-      user: req.params.userId,
-      name: { $regex: req.query.search, $options: 'i' },
-      category: req.query.category,
-      isActive: true,
-    });
+    const { userId, search, category } = req.query;
+    const conditions = {
+      user: userId,
+      ...((search || category) && {
+        $or: [
+          ...((category && [{ category }]) || []),
+          ...((search && [{ name: { $regex: search, $options: 'i' } }]) || []),
+        ],
+      }),
+      deleted: false,
+    };
+
+    const products = await Product.aggregate([
+      { $match: conditions },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          description: 1,
+          price: 1,
+          category: 1,
+          rating: 1,
+        },
+      },
+      {
+        $sort: {
+          rating: -1,
+        },
+      },
+    ]);
+
     res.send(products);
   } catch (error) {
-    res.status(500).send(error);
+    console.error(error);
   }
 };
 
-export const getProductCategories = async (req: Request, res: Response) => {
+export const getProductCategories = async (
+  req: Request<getProductCategoriesParams>,
+  res: Response,
+) => {
   try {
     const categories = await Product.find({ user: req.params.userId }).distinct(
       'category',
@@ -50,14 +92,27 @@ export const getProductCategories = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const product = await Product.findById(req.params.id);
+
     if (!product) {
       return res.status(404).send();
     }
-    res.send(product);
+    if (product.user.toString() !== req.userId!) {
+      return res.status(403).send({
+        message: 'You do not have permission to update this product.',
+      });
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    res.send(updatedProduct);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -65,14 +120,20 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true },
-    );
+    const product = await Product.findById(req.params.id);
+
     if (!product) {
       return res.status(404).send();
     }
+
+    if (product.user.toString() !== req.userId!) {
+      return res.status(403).send({
+        message: 'You do not have permission to delete this product.',
+      });
+    }
+
+    product.delete();
+
     res.send(product);
   } catch (error) {
     res.status(500).send(error);

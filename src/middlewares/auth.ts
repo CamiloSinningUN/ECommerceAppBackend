@@ -15,7 +15,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
         res.status(401).send({ message: 'Unauthorized!' });
         return;
       }
-      req.userId = Number(decoded?._id);
+      req.userId = decoded?._id;
       next();
     },
   );

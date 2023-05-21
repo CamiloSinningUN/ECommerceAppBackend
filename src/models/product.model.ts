@@ -1,6 +1,14 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
-const productSchema = new Schema({
+export interface IProduct extends Document {
+  user: Schema.Types.ObjectId;
+  name: string;
+  category: string;
+  description: string;
+  rating: number;
+}
+
+export const productSchema = new Schema<IProduct>({
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -18,6 +26,12 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
+  rating: {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: 0,
+  },
 });
 
-export const Product = model('Product', productSchema);
+export const Product = model<IProduct>('Product', productSchema);

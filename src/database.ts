@@ -10,7 +10,7 @@ const connect = async () => {
   } catch (err) {
     console.error(err);
   }
-}
+};
 
 function softDeletePlugin(schema: Schema) {
   schema.add({ deleted: { type: Boolean, default: false } });
@@ -36,6 +36,15 @@ function softDeletePlugin(schema: Schema) {
   schema.methods.hardDelete = function () {
     return this.remove();
   };
+}
+
+declare module 'mongoose' {
+  interface Document {
+    deleted: boolean;
+    delete(): Promise<Document>;
+    restore(): Promise<Document>;
+    hardDelete(): Promise<Document>;
+  }
 }
 
 mongoose.plugin(softDeletePlugin);
