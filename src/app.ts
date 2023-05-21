@@ -6,6 +6,7 @@ const app = express();
 // setting up the app
 app.set('port', process.env.PORT || 3000);
 
+// middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
@@ -14,7 +15,8 @@ app.use(morgan('dev'));
 app.get('/', (req, res) => {
   res.send('server is running');
 });
-import routes from './routes';
+
+import routes from '@routes';
 app.use('/api', routes);
 
 export default app;
