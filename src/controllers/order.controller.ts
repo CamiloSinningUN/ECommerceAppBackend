@@ -33,7 +33,7 @@ export const getOrder = async (req: Request, res: Response) => {
         .send({ message: 'You do not have permission to view this order.' });
     }
 
-    res.send(order);
+    res.status(200).send(order);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -57,7 +57,7 @@ export const getOrders = async (
     };
 
     const orders = await Order.find(conditions);
-    res.send(orders);
+    res.status(200).send(orders);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -93,7 +93,7 @@ export const updateOrder = async (
 
     updates.forEach((update) => ((<any>order[update]) = body[update]));
 
-    res.send(order);
+    res.status(200).send(order);
   } catch (error) {
     res.status(400).send(error);
   }

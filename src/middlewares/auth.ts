@@ -7,11 +7,13 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     return res.status(403).send({ message: 'No token provided!' });
   }
 
+  console.log(token);
   jwt.verify(
-    token,
-    process.env.SECRET_KEY!,
+    token.split(' ')[1],
+    process.env.SECRET_KEY! || 'secret',
     (err: VerifyErrors | null, decoded: any | undefined) => {
       if (err) {
+        console.log(err);
         res.status(401).send({ message: 'Unauthorized!' });
         return;
       }

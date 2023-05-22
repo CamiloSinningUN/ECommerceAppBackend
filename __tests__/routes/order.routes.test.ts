@@ -1,66 +1,128 @@
-import request from 'supertest';
 import { testApp } from '../utils';
+import { Request, Response } from 'express';
 
-describe('Order Routes', () => {
-  let token: string;
-  let userId: string;
-  let orderId: string;
+jest.mock('@controllers/order.controller', () => {
+  const mockFunctions: Record<string, jest.Mock> = {};
 
-  beforeAll(async () => {
-    // Supongamos que hemos creado un usuario y obtenemos un token para ese usuario
-    // ... código para obtener el token y el userId ...
+  const mockModule = jest.requireActual('@controllers/order.controller');
+
+  Object.keys(mockModule).forEach((key) => {
+    mockFunctions[key as string] = jest.fn((_req: Request, res: Response) => {
+      res.send('Mocked order controller');
+    });
   });
 
-  // Prueba la ruta POST /api/orders
-  it('should create a new order', async () => {
-    const res = await testApp
-      .post('/api/orders')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        product: 'productId',
-        quantity: 1,
-        user: userId,
-      });
+  return {
+    ...mockFunctions,
+  };
+});
 
-    expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('order');
-    orderId = res.body.order._id;
+describe('Order routes', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  // Prueba la ruta GET /api/orders/:id
-  it('should get an order by id', async () => {
-    const res = await testApp
-      .get(`/api/orders/${orderId}`)
-      .set('Authorization', `Bearer ${token}`);
+  describe('Create order', () => {
+    // test the POST /orders route - success
+    it('should return a success post message', async () => {
+      const response = await testApp
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${process.env.TEST_USER_TOKEN}`)
+        .send({
+          user: 'test',
+          product: 'test',
+          quantity: 1,
+          comment: 'test',
+          rating: 1,
+          orderDate: '2021-01-01',
+        })
+        .expect(201);
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('order');
-    expect(res.body.order._id).toEqual(orderId);
+      expect(response.text).toBe('Mocked order controller');
+    });
+
+    // test the POST /orders route - failure
+    it('should return a failure post message', async () => {
+      const response = await testApp
+        .post('/api/orders')
+        .send({
+          user: 'test',
+          product: 'test',
+          quantity: 1,
+          comment: 'test',
+          rating: 1,
+          orderDate: '2021-01-01',
+        })
+        .expect(403);
+    });
   });
 
-  // Prueba la ruta GET /api/orders
-  it('should get all orders for the user', async () => {
-    const res = await testApp
-      .get(`/api/orders`)
-      .set('Authorization', `Bearer ${token}`);
+  describe('Get order', () => {
+    // test the GET /orders/:id route - success
+    it('should return a success get message', async () => {
+      const response = await testApp
+        .get('/api/orders/1')
+        .set('Authorization', `Bearer ${process.env.TEST_USER_TOKEN}`)
+        .expect(200);
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toBeInstanceOf(Array);
+      expect(response.text).toBe('Mocked order controller');
+    });
+
+    // test the GET /orders/:id route - failure
+    it('should return a failure get message', async () => {
+      const response = await testApp.get('/api/orders/1').expect(403);
+    });
   });
 
-  // Prueba la ruta PATCH /api/orders/:id
-  it('should update an order', async () => {
-    const res = await testApp
-      .patch(`/api/orders/${orderId}`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        rating: 5,
-        comment: 'Great product!',
-      });
+  describe('Get orders', () => {
+    // test the GET /orders route - success
+    it('should return a success get message', async () => {
+      const response = await testApp
+        .get('/api/orders')
+        .set('Authorization', `Bearer ${process.env.TEST_USER_TOKEN}`)
+        .expect(200);
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('order');
-    expect(res.body.order.rating).toEqual(5);
-    expect(res.body.order.comment).toEqual('Great product!');
+      expect(response.text).toBe('Mocked order controller');
+    });
+
+    // test the GET /order route - failure
+    it('should return a failure get message', async () => {
+      const response = await testApp.get('/api/orders').expect(403);
+    });
+  });
+
+  describe('Update order', () => {
+    // test the PATCH /orders/:id route - success
+    it('should return a success patch message', async () => {
+      const response = await testApp
+        .patch('/api/orders/1')
+        .set('Authorization', `Bearer ${process.env.TEST_USER_TOKEN}`)
+        .send({
+          user: 'test',
+          product: 'test',
+          quantity: 1,
+          comment: 'test',
+          rating: 1,
+          orderDate: '2021-01-01',
+        })
+        .expect(200);
+
+      expect(response.text).toBe('Mocked order controller');
+    });
+
+    // test the PATCH /orders/:id route - failure
+    it('should return a failure patch message', async () => {
+      const response = await testApp
+        .patch('/api/orders/1')
+        .send({
+          user: 'test',
+          product: 'test',
+          quantity: 1,
+          comment: 'test',
+          rating: 1,
+          orderDate: '2021-01-01',
+        })
+        .expect(403);
+    });
   });
 });

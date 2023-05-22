@@ -22,8 +22,12 @@ export const getUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).send();
     }
-    res.send(user);
+    res.status(200).send(user);
   } catch (error) {
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
+
     res.status(500).send(error);
   }
 };
@@ -38,13 +42,13 @@ export const getUserToken = async (req: Request, res: Response) => {
 
     const isPasswordMatch = await user.comparePassword(req.body.password);
     if (!isPasswordMatch) {
-      return res.status(401).send();
+      return res.status(402).send();
     }
     const token = jwt.sign(
       { _id: user._id.toString() },
       process.env.SECRET_KEY!,
     );
-    res.send({ token });
+    res.status(200).send({ token });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -80,8 +84,11 @@ export const updateUser = async (
       return res.status(404).send();
     }
 
-    res.send(user);
+    res.status(200).send(user);
   } catch (error) {
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
     res.status(400).send(error);
   }
 };
@@ -103,8 +110,13 @@ export const deleteUser = async (
     }
 
     await user.delete();
-    res.send(user);
+    res.status(200).send(user);
   } catch (error) {
+    console.error(error);
+
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
     res.status(500).send(error);
   }
 };

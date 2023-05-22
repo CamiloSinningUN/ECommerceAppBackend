@@ -8,7 +8,8 @@
     "start:dev": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register src/index.ts --respawn --transpile-only",
     "build": "tsc && tsc-alias",
-    "test": "jest --watchAll --runInBand"
+    "test": "jest --watchAll",
+    "test:async": "npm run test -- --runInBand"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "jest": "29.5.0",
     "prettier": "2.8.8",
     "supertest": "6.3.3",
+    "ts-jest": "29.1.0",
     "ts-node": "10.9.1",
     "ts-node-dev": "2.0.0",
     "tsc-alias": "1.8.6",

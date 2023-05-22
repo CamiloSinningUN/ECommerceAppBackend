@@ -31,6 +31,12 @@ userSchema.pre('save', async function (this: IUser, next) {
   next();
 });
 
+userSchema.methods.toJSON = function (this: IUser) {
+  const userObject = this.toObject();
+  delete userObject.password;
+  return userObject;
+};
+
 userSchema.methods.comparePassword = async function (password: string) {
   return bcrypt.compare(password, this.password);
 };

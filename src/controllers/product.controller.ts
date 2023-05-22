@@ -25,7 +25,7 @@ export const getProduct = async (req: Request, res: Response) => {
     if (!product) {
       return res.status(404).send();
     }
-    res.send(product);
+    res.status(200).send(product);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -41,7 +41,7 @@ export const getProducts = async (
   try {
     const { userId, search, category } = req.query;
     const conditions = {
-      user: userId,
+      ...(userId && { user: userId }),
       ...((search || category) && {
         $or: [
           ...((category && [{ category }]) || []),
@@ -70,7 +70,7 @@ export const getProducts = async (
       },
     ]);
 
-    res.send(products);
+    res.status(200).send(products);
   } catch (error) {
     console.error(error);
   }
@@ -84,7 +84,7 @@ export const getProductCategories = async (
     const categories = await Product.find({ user: req.params.userId }).distinct(
       'category',
     );
-    res.send(categories);
+    res.status(200).send(categories);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -112,7 +112,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       },
     );
 
-    res.send(updatedProduct);
+    res.status(200).send(updatedProduct);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -134,7 +134,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
     product.delete();
 
-    res.send(product);
+    res.status(200).send(product);
   } catch (error) {
     res.status(500).send(error);
   }
