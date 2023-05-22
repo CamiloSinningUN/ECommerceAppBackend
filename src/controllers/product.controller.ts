@@ -2,6 +2,7 @@ import { Product } from '@models';
 import { getProductCategoriesParams } from '@shared/types/params/productParams';
 import { GetProductsQueryParams } from '@shared/types/queries/productQueries';
 import { Request, Response } from 'express';
+import { Error } from 'mongoose';
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -179,7 +180,7 @@ export const deleteProduct = async (
       return res.status(404).send();
     }
     // DocumentNotFoundError
-    if ((<Error>error).name === 'DocumentNotFoundError') {
+    if (error instanceof Error.DocumentNotFoundError) {
       return res.status(404).send();
     }
 
