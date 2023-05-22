@@ -5,6 +5,10 @@ import { updateOrderBody } from '@shared/dto/order';
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
+    if (!req.body.user || !req.body.product || !req.body.quantity) {
+      return res.status(400).send();
+    }
+
     if (req.body.user !== req.userId) {
       return res.status(403).send({
         message: 'User ID in token does not match user ID in request body.',
@@ -15,6 +19,8 @@ export const createOrder = async (req: Request, res: Response) => {
     await order.save();
     res.status(201).send(order);
   } catch (error) {
+    console.log(error);
+
     res.status(400).send(error);
   }
 };

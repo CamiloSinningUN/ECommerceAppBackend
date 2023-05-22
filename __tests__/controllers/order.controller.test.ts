@@ -19,12 +19,19 @@ describe('Order Controller', () => {
 
   describe('Create order', () => {
     it('should create a new order', async () => {
-      const req = { body: newOrder, userId: '5f8d0a7d8b0c0a2a1c9d4c9d' } as Request;
-      const res = { json: jest.fn() } as unknown as Response;
+      const req = {
+        body: newOrder,
+        userId: '5f8d0a7d8b0c0a2a1c9d4c9d'
+      } as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      } as unknown as Response;
 
       await orderController.createOrder(req, res);
 
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining(newOrder));
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.send).toHaveBeenCalledWith(expect.any(Object));
     });
 
     it('should not create a new order with invalid data', async () => {
