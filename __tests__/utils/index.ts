@@ -18,6 +18,7 @@ export const testProducts = [
     name: 'test product 1',
     category: 'test category 1',
     description: 'test description 1',
+    price: 100,
     rating: 4.5,
   },
   {
@@ -25,6 +26,7 @@ export const testProducts = [
     name: 'test product 2',
     category: 'test category 2',
     description: 'test description 2',
+    price: 100,
     rating: 4.5,
   },
   {
@@ -32,6 +34,7 @@ export const testProducts = [
     name: 'test product 3',
     category: 'test category 3',
     description: 'test description 3',
+    price: 100,
     rating: 4.5,
   },
 ];

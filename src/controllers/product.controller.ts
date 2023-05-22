@@ -5,6 +5,10 @@ import { Request, Response } from 'express';
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
+    if (!req.body.user || !req.body.name || !req.body.price || !req.body.description || !req.body.category) {
+      return res.status(400).send();
+    }
+
     if (req.body.user !== req.userId) {
       return res.status(403).send({
         message: 'User ID in token does not match user ID in request body.',
@@ -90,7 +94,7 @@ export const getProductCategories = async (
   }
 };
 
-export const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request<{ id: string }>, res: Response) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -118,7 +122,7 @@ export const updateProduct = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request<{ id: string }>, res: Response) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -136,6 +140,8 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
     res.status(200).send(product);
   } catch (error) {
+    console.log(error);
+
     res.status(500).send(error);
   }
 };

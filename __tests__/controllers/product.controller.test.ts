@@ -21,6 +21,7 @@ describe('Product controller', () => {
     it('should create a product', async () => {
       const req = {
         body: newProduct,
+        userId: '5f8d0a7d8b0c0a2a1c9d4c9d',
       } as Request;
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -35,10 +36,7 @@ describe('Product controller', () => {
 
     it('should not create a product with invalid data', async () => {
       const req = {
-        body: {
-          name: 'test',
-          price: 'test',
-        },
+        body: {},
       } as Request;
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -73,7 +71,7 @@ describe('Product controller', () => {
     it('should not get a product with invalid id', async () => {
       const req = {
         params: {
-          id: '123',
+          id: '5f8d0a7d8b0c0a2a1c9d4c9d',
         },
       };
       const res = {
@@ -117,6 +115,7 @@ describe('Product controller', () => {
           name: 'test',
           price: 123,
         },
+        userId: '5f8d0a7d8b0c0a2a1c9d4c9d',
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -132,12 +131,13 @@ describe('Product controller', () => {
     it('should not update a product with invalid id', async () => {
       const req = {
         params: {
-          id: '123',
+          id: '5fed0a7d8b0c0a2a1c9d4c9d',
         },
         body: {
           name: 'test',
           price: 123,
         },
+        userId: '5f8d0a7d8b0c0a2a1c9d4c9d',
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -157,6 +157,7 @@ describe('Product controller', () => {
         params: {
           id: insertedProducts[0]._id,
         },
+        userId: '5f8d0a7d8b0c0a2a1c9d4c9d',
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -172,8 +173,9 @@ describe('Product controller', () => {
     it('should not delete a product with invalid id', async () => {
       const req = {
         params: {
-          id: '123',
+          id: '5f8e0a7d8b0c0a2a1c9d4c9d',
         },
+        userId: '5f8d0a7d8b0c0a2a1c9d4c9d',
       };
       const res = {
         status: jest.fn().mockReturnThis(),

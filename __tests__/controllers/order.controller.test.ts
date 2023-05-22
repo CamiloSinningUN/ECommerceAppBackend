@@ -19,7 +19,7 @@ describe('Order Controller', () => {
 
   describe('Create order', () => {
     it('should create a new order', async () => {
-      const req = { body: newOrder } as Request;
+      const req = { body: newOrder, userId: '5f8d0a7d8b0c0a2a1c9d4c9d' } as Request;
       const res = { json: jest.fn() } as unknown as Response;
 
       await orderController.createOrder(req, res);
@@ -28,7 +28,7 @@ describe('Order Controller', () => {
     });
 
     it('should not create a new order with invalid data', async () => {
-      const req = { body: {} } as Request;
+      const req = { body: {}, userId: '5f8d0a7d8b0c0a2a1c9d4c9d' } as Request;
       const res = { json: jest.fn() } as unknown as Response;
 
       await orderController.createOrder(req, res);
@@ -41,7 +41,7 @@ describe('Order Controller', () => {
 
   describe('Get orders', () => {
     it('should get all orders', async () => {
-      const req = {} as Request;
+      const req = { userId: '5f8d0a7d8b0c0a2a1c9d4c9d' } as Request;
       const res = { json: jest.fn() } as unknown as Response;
 
       await orderController.getOrders(req, res);
@@ -54,7 +54,7 @@ describe('Order Controller', () => {
 
   describe('Get order', () => {
     it('should get order by id', async () => {
-      const req = { params: { id: insertedOrders[0]._id } };
+      const req = { params: { id: insertedOrders[0]._id }, userId: '5f8d0a7d8b0c0a2a1c9d4c9d' };
       const res = { json: jest.fn() } as unknown as Response;
 
       await orderController.getOrder(req as any, res);
@@ -65,7 +65,7 @@ describe('Order Controller', () => {
     });
 
     it('should not get order by invalid id', async () => {
-      const req = { params: { id: 'invalid' } };
+      const req = { params: { id: 'invalid' }, userId: '5f8d0a7d8b0c0a2a1c9d4c9d' };
       const res = { json: jest.fn() } as unknown as Response;
 
       await orderController.getOrder(req as any, res);
@@ -78,7 +78,7 @@ describe('Order Controller', () => {
 
   describe('Update order', () => {
     it('should update order by id', async () => {
-      const req = { params: { id: insertedOrders[0]._id }, body: newOrder };
+      const req = { params: { id: insertedOrders[0]._id }, body: newOrder, userId: '5f8d0a7d8b0c0a2a1c9d4c9d' };
       const res = { json: jest.fn() } as unknown as Response;
 
       await orderController.updateOrder(req as any, res);
