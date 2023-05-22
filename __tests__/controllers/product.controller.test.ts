@@ -102,7 +102,62 @@ describe('Product controller', () => {
       expect(res.send).toHaveBeenCalledWith(expect.any(Object));
     });
 
-    // TODO - el invalido
+    it('should return 404 when empty', async () => {
+      const req = {
+        query: {
+          userId: 'invalid',
+        },
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      };
+
+      await productController.getProducts(req as any, res as any);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.send).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('Get products categories by user', () => {
+    it('should get products categories by user', async () => {
+      const req = {
+        query: {},
+        params: {
+          userId: '5f8d0a7d8b0c0a2a1c9d4c9d',
+        },
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      };
+
+      await productController.getProductCategories(req as any, res as any);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.send).toHaveBeenCalledWith(expect.any(Object));
+    });
+
+    it('should return 404 when empty', async () => {
+      const req = {
+        query: {
+          userId: 'invalid',
+        },
+        params: {
+          userId: 'invalid',
+        },
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      };
+
+      await productController.getProductCategories(req as any, res as any);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.send).toHaveBeenCalledWith();
+    });
   });
 
   describe('Update product', () => {
@@ -131,7 +186,7 @@ describe('Product controller', () => {
     it('should not update a product with invalid id', async () => {
       const req = {
         params: {
-          id: '5fed0a7d8b0c0a2a1c9d4c9d',
+          id: '123',
         },
         body: {
           name: 'test',
@@ -173,7 +228,7 @@ describe('Product controller', () => {
     it('should not delete a product with invalid id', async () => {
       const req = {
         params: {
-          id: '5f8e0a7d8b0c0a2a1c9d4c9d',
+          id: '123',
         },
         userId: '5f8d0a7d8b0c0a2a1c9d4c9d',
       };

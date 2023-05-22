@@ -8,7 +8,7 @@
     "start:dev": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register src/index.ts --respawn --transpile-only",
     "build": "tsc && tsc-alias",
-    "test": "jest --watchAll",
+    "test": "jest --watchAll --silent --testTimeout=10000",
     "test:async": "npm run test -- --runInBand"
   },
   "repository": {

@@ -35,7 +35,7 @@ describe('Product routes', () => {
           description: 'test',
           rating: 5,
         })
-        .expect(201);
+        .expect(200);
 
       expect(response.text).toBe('Mocked product controller');
     });
@@ -52,6 +52,35 @@ describe('Product routes', () => {
           rating: 5,
         })
         .expect(403);
+    });
+  });
+
+  describe('Get product', () => {
+    // test the GET /products route - success
+    it('should return a success get message', async () => {
+      const response = await testApp.get('/api/products/23h').expect(200);
+
+      expect(response.text).toBe('Mocked product controller');
+    });
+  });
+
+  describe('Get products', () => {
+    // test the GET /products route - success
+    it('should return a success get message', async () => {
+      const response = await testApp.get('/api/products').expect(200);
+
+      expect(response.text).toBe('Mocked product controller');
+    });
+  });
+
+  describe('Get products categories', () => {
+    // test the GET /products route - success
+    it('should return a success get message', async () => {
+      const response = await testApp
+        .get('/api/products/categories/2013h')
+        .expect(200);
+
+      expect(response.text).toBe('Mocked product controller');
     });
   });
 

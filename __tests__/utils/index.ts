@@ -42,7 +42,7 @@ export const testProducts = [
 export const testOrders = [
   {
     user: '5f8d0a7d8b0c0a2a1c9d4c9d',
-    product: '5f8e0ad8b0c0a2a1c9d4c9d',
+    product: '5f8ee0ad8b0c0a2a1c9d4c9d',
     quantity: 1,
     comment: 'test comment 1',
     rating: 4.5,

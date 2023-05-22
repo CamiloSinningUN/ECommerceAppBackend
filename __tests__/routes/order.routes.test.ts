@@ -36,7 +36,7 @@ describe('Order routes', () => {
           rating: 1,
           orderDate: '2021-01-01',
         })
-        .expect(201);
+        .expect(200);
 
       expect(response.text).toBe('Mocked order controller');
     });

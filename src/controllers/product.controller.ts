@@ -5,7 +5,13 @@ import { Request, Response } from 'express';
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    if (!req.body.user || !req.body.name || !req.body.price || !req.body.description || !req.body.category) {
+    if (
+      !req.body.user ||
+      !req.body.name ||
+      !req.body.price ||
+      !req.body.description ||
+      !req.body.category
+    ) {
       return res.status(400).send();
     }
 
@@ -31,6 +37,10 @@ export const getProduct = async (req: Request, res: Response) => {
     }
     res.status(200).send(product);
   } catch (error) {
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
+
     res.status(500).send(error);
   }
 };
@@ -74,9 +84,14 @@ export const getProducts = async (
       },
     ]);
 
+    if (!products || products.length === 0) {
+      return res.status(404).send();
+    }
+
     res.status(200).send(products);
   } catch (error) {
     console.error(error);
+    res.status(500).send(error);
   }
 };
 
@@ -88,13 +103,26 @@ export const getProductCategories = async (
     const categories = await Product.find({ user: req.params.userId }).distinct(
       'category',
     );
+
+    if (!categories || categories.length === 0) {
+      return res.status(404).send();
+    }
+
     res.status(200).send(categories);
   } catch (error) {
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
+
+    console.error(error);
     res.status(500).send(error);
   }
 };
 
-export const updateProduct = async (req: Request<{ id: string }>, res: Response) => {
+export const updateProduct = async (
+  req: Request<{ id: string }>,
+  res: Response,
+) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -118,11 +146,18 @@ export const updateProduct = async (req: Request<{ id: string }>, res: Response)
 
     res.status(200).send(updatedProduct);
   } catch (error) {
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
+
     res.status(400).send(error);
   }
 };
 
-export const deleteProduct = async (req: Request<{ id: string }>, res: Response) => {
+export const deleteProduct = async (
+  req: Request<{ id: string }>,
+  res: Response,
+) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -140,7 +175,13 @@ export const deleteProduct = async (req: Request<{ id: string }>, res: Response)
 
     res.status(200).send(product);
   } catch (error) {
-    console.log(error);
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
+    // DocumentNotFoundError
+    if ((<Error>error).name === 'DocumentNotFoundError') {
+      return res.status(404).send();
+    }
 
     res.status(500).send(error);
   }

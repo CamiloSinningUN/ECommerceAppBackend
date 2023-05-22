@@ -22,6 +22,41 @@ describe('User Routes', () => {
     jest.clearAllMocks();
   });
 
+  describe('Create User', () => {
+    it('should return a success post message', async () => {
+      const response = await testApp
+        .post('/api/users')
+        .send({
+          name: 'test',
+          email: '',
+          password: '',
+        })
+        .expect(200);
+
+      expect(response.text).toBe('Mocked user controller');
+    });
+  });
+
+  describe('Get User', () => {
+    it('should return a success get message', async () => {
+      const response = await testApp.get('/api/users/253h').expect(200);
+
+      expect(response.text).toBe('Mocked user controller');
+    });
+  });
+
+  describe('Login User', () => {
+    it('should return a success login message', async () => {
+      const response = await testApp
+        .post('/api/users/login')
+        .send({
+          email: '',
+          password: '',
+        })
+        .expect(200);
+    });
+  });
+
   describe('Update User', () => {
     it('should return a success patch message', async () => {
       const response = await testApp

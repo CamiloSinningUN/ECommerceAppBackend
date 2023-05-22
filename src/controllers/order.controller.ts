@@ -19,8 +19,6 @@ export const createOrder = async (req: Request, res: Response) => {
     await order.save();
     res.status(201).send(order);
   } catch (error) {
-    console.log(error);
-
     res.status(400).send(error);
   }
 };
@@ -41,6 +39,9 @@ export const getOrder = async (req: Request, res: Response) => {
 
     res.status(200).send(order);
   } catch (error) {
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send();
+    }
     res.status(500).send(error);
   }
 };
@@ -63,8 +64,18 @@ export const getOrders = async (
     };
 
     const orders = await Order.find(conditions);
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).send();
+    }
+
     res.status(200).send(orders);
   } catch (error) {
+    if ((<Error>error).name === 'CastError') {
+      return res.status(404).send({
+        message: 'Invalid product ID.',
+      });
+    }
     res.status(500).send(error);
   }
 };
@@ -80,7 +91,7 @@ export const updateOrder = async (
   );
 
   if (!isValidOperation) {
-    return res.status(400).send({ error: 'Invalid updates!' });
+    return res.status(400).send();
   }
 
   const body = req.body;
@@ -101,6 +112,6 @@ export const updateOrder = async (
 
     res.status(200).send(order);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).send(error);
   }
 };
